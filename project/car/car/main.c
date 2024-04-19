@@ -45,6 +45,10 @@ int main(void)
 	uint8_t index=0;
 	uint8_t thumb=0;
 	uint8_t val=0;
+	PORTD= (1<<PIND5);
+	_delay_us(1500);
+	PORTD = 0x00;
+	_delay_ms(2000);
 	while (1)
 	{
 		LCD_cmd(0x01);
@@ -76,34 +80,32 @@ int main(void)
 			LCD_write(ch[j]);
 		}
 		_delay_ms(10);
+		
 		if (middle>200 && thumb>200 && index>200){//stop
-			PORTD= (1<<PIND5);
-			_delay_us(150);
-			PORTD = 0x00;
-			_delay_ms(200);
+			
 			PORTC &= ~(1<<PINC0) ;
 			PORTC &= ~(1<<PINC1);
 			
 		}
 		else if (middle<200 &&thumb<200 && index<200){//forward
-			OCR2B=375-(middle +thumb+index)/3;
-
+			OCR2B=255*(375-(middle +thumb+index)/3)/375;
 			PORTC |= (1<<PINC0) ;
 			PORTC &= ~(1<<PINC1);
+			
 			PORTD= (1<<PIND5);
-			_delay_us(150);
+			_delay_us(1500);
 			PORTD = 0x00;
-			_delay_ms(200);
+			_delay_ms(2000);
 		}
 		else if (middle<200 && thumb>200 && index<200){//back
-			OCR2B=375-(middle +index)/3;
+			OCR2B=255*(375-(middle +index)/3)/375;
 
 			PORTC |= (1<<PINC1) ;
 			PORTC &= ~(1<<PINC0);
 			PORTD= (1<<PIND5);
-			_delay_us(150);
+			_delay_us(1500);
 			PORTD = 0x00;
-			_delay_ms(200);
+			_delay_ms(2000);
 		}
 		else if(thumb<200 && index >200 &&middle>200){
 			//go left
@@ -122,7 +124,6 @@ int main(void)
 			PORTD = 0x00;
 			_delay_ms(200);
 			
-
 		}
 		LCD_cmd(0x01);
 		
