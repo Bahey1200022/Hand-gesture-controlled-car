@@ -1,0 +1,86 @@
+
+I see. Let's approach this differently. Since you're using an 8-bit timer (Timer 0), the OCR0B register will have a range from 0 to 255. This range corresponds to the width of the pulse you're sending to the servo.
+
+Servo motors typically accept pulse widths ranging from around 1000 microseconds to 2000 microseconds, with 1500 microseconds being the center position.
+
+To convert microseconds to a value that fits within the range of OCR0B (0 to 255), you can use the following formula:
+
+OCR0B
+=
+Desired Pulse Width in microseconds
+×
+Timer Frequency
+256
+×
+Prescaler
+OCR0B= 
+256×Prescaler
+Desired Pulse Width in microseconds×Timer Frequency
+​
+ 
+
+Where:
+
+"Desired Pulse Width in microseconds" is the desired pulse width you want to achieve (e.g., 1500 for the center position).
+"Timer Frequency" is the frequency at which Timer 0 is running.
+"Prescaler" is the prescaler value you've set (in your case, it's 
+CS01
+∣
+CS00
+CS01∣CS00, so the prescaler is 64).
+Let's assume you're running Timer 0 at 8 MHz and you want to set the servo to its center position (1500 microseconds). Plugging these values into the formula:
+
+OCR0B
+=
+1500
+×
+1
+0
+3
+×
+8
+×
+1
+0
+6
+256
+×
+64
+OCR0B= 
+256×64
+1500×10 
+3
+ ×8×10 
+6
+ 
+​
+ 
+OCR0B
+=
+1500
+×
+1
+0
+3
+×
+8
+×
+1
+0
+6
+16384
+OCR0B= 
+16384
+1500×10 
+3
+ ×8×10 
+6
+ 
+​
+ 
+OCR0B
+≈
+732
+OCR0B≈732
+
+So, you would set OCR0B to approximately 732 to achieve a 1500 microsecond pulse width, which should position the servo at its center. Adjust this value accordingly for different positions within the servo's range.

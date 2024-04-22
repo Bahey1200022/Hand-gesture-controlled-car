@@ -23,6 +23,7 @@ void LCD_cmd(unsigned char cmd);
 void init_LCD(void);
 void LCD_write(unsigned char data);
 void Cursor_pos(unsigned char x_pos, unsigned char y_pos);
+void servo_init(void);
 
 
 
@@ -45,10 +46,9 @@ int main(void)
 	uint8_t index=0;
 	uint8_t thumb=0;
 	uint8_t val=0;
-	PORTD= (1<<PIND5);
-	_delay_us(1500);
-	PORTD = 0x00;
-	_delay_ms(2000);
+	
+	servo_init();
+	OCR0B=12;
 	while (1)
 	{
 		LCD_cmd(0x01);
@@ -71,7 +71,7 @@ int main(void)
 		ADCSRA |= (1 << ADSC);					// start ADC conversion
 		while(BIT_IS_SET(ADCSRA, ADSC)) {}
 		middle=ADCH;
-		itoa(ADCH,ch,8);  ////convert int to string
+		itoa(thumb,ch,8);  ////convert int to string
 
 		for (int j=0;j<4;j++){
 			if (ch[j]<'0'||ch[j]>'9')
@@ -92,37 +92,27 @@ int main(void)
 			PORTC |= (1<<PINC0) ;
 			PORTC &= ~(1<<PINC1);
 			
-			PORTD= (1<<PIND5);
-			_delay_us(1500);
-			PORTD = 0x00;
-			_delay_ms(2000);
+			OCR0B=12;
+
 		}
 		else if (middle<200 && thumb>200 && index<200){//back
 			OCR2B=255*(375-(middle +index)/3)/375;
 
 			PORTC |= (1<<PINC1) ;
 			PORTC &= ~(1<<PINC0);
-			PORTD= (1<<PIND5);
-			_delay_us(1500);
-			PORTD = 0x00;
-			_delay_ms(2000);
+			OCR0B=12;
+			
 		}
 		else if(thumb<200 && index >200 &&middle>200){
 			//go left
-			PORTD = (1<<PIND5);
-			_delay_us(100);
-			PORTD = 0x00;
 
-			_delay_ms(200);
 			
-
+			OCR0B=1;
 		}
 		else if(thumb>200 && index <200 && middle>200){
 			//go right
-			PORTD =(1<<PIND5);
-			_delay_ms(200);
-			PORTD = 0x00;
-			_delay_ms(200);
+
+			OCR0B=15;
 			
 		}
 		LCD_cmd(0x01);
@@ -133,13 +123,12 @@ int main(void)
 }
 
 void pwm_init(void){
-	///datasheet
+	///OC2B
 	
 	TCCR2A |=(1<<COM2B1) |(1<< WGM21) |(1<<WGM20) ; ///OC2B FAST PWM;
 	TCCR2B |= (1<<CS20) | (1<<WGM22);//no prescaler and wgm2
 	
-	OCR2A=800; //frequency
-	OCR2B=100; //duty cycle 0->255
+	OCR2B=255; //duty cycle 0->255
 }
 
 
@@ -209,5 +198,13 @@ void Cursor_pos(unsigned char x_pos, unsigned char y_pos) //x awel aw tani row (
 	if(y_pos<16)
 	the_address+=y_pos;
 	LCD_cmd(the_address);
+	
+}
+
+void servo_init(){
+	//OC0B
+	TCCR0A |=(1<<COM0B1) | (1<<WGM00) ;
+	TCCR0B |=(1<<CS01) | (1<<CS00);
+
 	
 }
