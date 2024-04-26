@@ -71,7 +71,7 @@ int main(void)
 		ADCSRA |= (1 << ADSC);					// start ADC conversion
 		while(BIT_IS_SET(ADCSRA, ADSC)) {}
 		middle=ADCH;
-		itoa(thumb,ch,8);  ////convert int to string
+		itoa(thumb,ch,10);  ////convert int to string
 
 		for (int j=0;j<4;j++){
 			if (ch[j]<'0'||ch[j]>'9')
@@ -81,38 +81,38 @@ int main(void)
 		}
 		_delay_ms(10);
 		
-		if (middle>200 && thumb>200 && index>200){//stop
+		if (middle>130 && thumb>130 && index>130){//stop
 			
 			PORTC &= ~(1<<PINC0) ;
 			PORTC &= ~(1<<PINC1);
 			
 		}
-		else if (middle<200 &&thumb<200 && index<200){//forward
-			OCR2B=255*(375-(middle +thumb+index)/3)/375;
+		else if (middle<130 &&thumb<130 && index<130){//forward
+			OCR2A=(4*(255-((middle +thumb+index)/3)));
 			PORTC |= (1<<PINC0) ;
 			PORTC &= ~(1<<PINC1);
 			
 			OCR0B=12;
 
 		}
-		else if (middle<200 && thumb>200 && index<200){//back
-			OCR2B=255*(375-(middle +index)/3)/375;
+		else if (middle<130 && thumb>130 && index<130){//back
+			OCR2A=(4*(255-((middle +index)/3)));
 
 			PORTC |= (1<<PINC1) ;
 			PORTC &= ~(1<<PINC0);
 			OCR0B=12;
 			
 		}
-		else if(thumb<200 && index >200 &&middle>200){
+		else if(thumb<130 && index >130 &&middle>130){
 			//go left
 
 			
 			OCR0B=1;
 		}
-		else if(thumb>200 && index <200 && middle>200){
+		else if(thumb>130 && index <130 && middle>130){
 			//go right
 
-			OCR0B=15;
+			OCR0B=16;
 			
 		}
 		LCD_cmd(0x01);
