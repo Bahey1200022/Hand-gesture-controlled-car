@@ -85,12 +85,19 @@ int main(void)
 			
 			PORTC &= ~(1<<PINC0) ;
 			PORTC &= ~(1<<PINC1);
+			_delay_ms(600);
+
+			OCR0B=12;
+
 			
 		}
 		else if (middle<130 &&thumb<130 && index<130){//forward
 			OCR2A=(4*(255-((middle +thumb+index)/3)));
 			PORTC |= (1<<PINC0) ;
 			PORTC &= ~(1<<PINC1);
+			
+			
+			_delay_ms(600);
 			
 			OCR0B=12;
 
@@ -100,6 +107,8 @@ int main(void)
 
 			PORTC |= (1<<PINC1) ;
 			PORTC &= ~(1<<PINC0);
+			_delay_ms(600);
+
 			OCR0B=12;
 			
 		}
